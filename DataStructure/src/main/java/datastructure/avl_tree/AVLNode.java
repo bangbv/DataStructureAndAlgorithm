@@ -5,4 +5,11 @@ public class AVLNode {
 	AVLNode left;
 	AVLNode right;
 	int ht; // height of the node
+	
+	public AVLNode(int avl) {
+		this.avl = avl;
+		this.left = null;
+		this.right = null;
+		this.ht = 0;
+	}
 }

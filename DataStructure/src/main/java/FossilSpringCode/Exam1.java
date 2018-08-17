@@ -7,8 +7,8 @@ import java.io.FileWriter;
 
 public class Exam1 {
 	public static void main(String[] args) throws Exception {
-		BufferedReader reader = new BufferedReader(new FileReader("input.txt"));
-		BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
+		BufferedReader reader = new BufferedReader(new FileReader("/Users/bvbang/Documents/workspace/DataStructureAndAlgorithm/DataStructure/src/main/resources/input.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("/Users/bvbang/Documents/workspace/DataStructureAndAlgorithm/DataStructure/src/main/resources/output.txt"));
 		String line = null;
 		while (((line = reader.readLine()) != null)) {
 			line = line.replaceAll("\\s+","");
