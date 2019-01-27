@@ -2,21 +2,31 @@ package com.algorithm.string;
 
 public class MyString {
 
+	static class Top {
+		public void myPrint() {
+			System.out.println("This is top class.");
+		}
+	}
 	enum Planet {
 		MERCURY, VENUS, EARTH
 	}
 	
 	public static void main(String[] args) {
-		int[] input = {1,4,9,12,98,-10,10};
-		System.out.println(sumRange(input));
-//		String a = "foo";
-//		String b = "foo";
+		//int[] input = {1,4,9,12,98,-10,10};
+		//System.out.println(sumRange(input));
+		
+		MyString.Top t = new MyString.Top();
+		t.myPrint();
+//		String a = new String("foo");
+//		a.intern();
+//		String b = new String("foo");
+//		b.intern();
 //		if(a == b) {
 //			System.out.println("true");
 //		}else {
 //			System.out.println("false");
 //		}
-//		
+		
 //		int i = 0;
 //		System.out.println("result:"+i++);
 //		String[] input = {"f","o","o","bar"};
@@ -27,7 +37,7 @@ public class MyString {
 	static String concat(String[] strs) {
 		String result = new String(); 
 		for(int i = 0;i<strs.length;i++) {
-			result = String.join("",result,strs[i]);
+			//result = String.join("",result,strs[i]);
 		}
 		return result;
 	}
