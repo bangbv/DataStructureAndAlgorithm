@@ -67,7 +67,7 @@ public class Question_4 {
             previous_time = null;
             break;
         }
-        
+
         spark.close();
 
 //        try {
