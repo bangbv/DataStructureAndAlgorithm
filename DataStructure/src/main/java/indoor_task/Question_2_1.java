@@ -21,7 +21,6 @@ public class Question_2_1 {
         double pre_p_x, pre_p_y;
         long time_range;
         double distance;
-        double total_distance = 0;
         double moving_speed_average;
         SparkConf sparkConf = new SparkConf();
         SparkContext sc = new SparkContext("local", "spark-mysql-test", sparkConf);
@@ -37,6 +36,7 @@ public class Question_2_1 {
         Dataset<Row> mac_number = df.select("clientMac").groupBy("clientMac").count();
         List<Row> mac_frequent = mac_number.select("clientMac").where("count > 10").limit(10000000).collectAsList();
         for (Row row : mac_frequent) {
+            double total_distance = 0;
             LocalDateTime previous_time = null;
             pre_p_x = 0;
             pre_p_y = 0;
@@ -62,7 +62,7 @@ public class Question_2_1 {
                     //System.out.println("moving_range:" + moving_range);
                 }
 
-                if (time_range <= 5) {
+                if (0 < time_range && time_range <= 5) {
                     total_time = total_time + time_range;
                     total_distance = total_distance + distance;
                 }
@@ -70,8 +70,10 @@ public class Question_2_1 {
                 pre_p_x = p_x;
                 pre_p_y = p_y;
             }
-            moving_speed_average = total_distance / total_time;
-            result.put(mac, moving_speed_average);
+            if(total_time > 0) {
+                moving_speed_average = total_distance / total_time;
+                result.put(mac, moving_speed_average);
+            }
         }
         spark.close();
         save(result);
@@ -98,7 +100,7 @@ public class Question_2_1 {
 
     private static void save(Map<String, Double> result) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\RC46FW\\workspace\\output_question_2_1.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("E:\\workspace\\output_question_2_1.txt"));
             for (Map.Entry<String, Double> entry : result.entrySet()) {
                 writer.write("\""+entry.getKey() + "\"," + entry.getValue() + "\n");
                 //System.out.println("mac:" + entry.getKey());

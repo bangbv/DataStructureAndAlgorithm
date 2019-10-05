@@ -49,7 +49,7 @@ public class Question_4 {
                     first_time = datetime;
                 } else {
                     Duration duration = Duration.between(previous_time, datetime);
-                    //System.out.println("Seconds:" + duration.toSeconds());
+                    System.out.println("Seconds:" + duration.toSeconds());
                     range = duration.toSeconds();
                 }
 
