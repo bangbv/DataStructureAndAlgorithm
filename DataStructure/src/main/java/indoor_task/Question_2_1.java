@@ -21,7 +21,7 @@ public class Question_2_1 {
         SparkConf sparkConf = new SparkConf();
         SparkContext sc = new SparkContext("local", "spark-mysql-test", sparkConf);
         SparkSession spark = new SparkSession(sc);
-        Map<String, Double> result = new HashMap<>();
+        Map<String, Long> result = new HashMap<>();
 
         String sql = "(select * from location20180101) as table_1";
 
@@ -32,46 +32,46 @@ public class Question_2_1 {
         Dataset<Row> mac_number = df.select("clientMac").groupBy("clientMac").count();
         List<Row> mac_frequent = mac_number.select("clientMac").where("count > 10").limit(10000000).collectAsList();
         for (Row row : mac_frequent) {
-            double pre_p_x, pre_p_y;
+            //double pre_p_x, pre_p_y;
             long time_range;
-            double distance;
-            double moving_speed_average;
-            double total_distance = 0;
+            //double distance;
+            //double moving_speed_average;
+            long total_pairs = 0;
             LocalDateTime previous_time = null;
-            pre_p_x = 0;
-            pre_p_y = 0;
+            //pre_p_x = 0;
+            //pre_p_y = 0;
             String mac = row.getString(0);
             //System.out.println("mac:" + mac);
             ListIterator<Row> position_list = df.select("x", "y", "timeStamp").where("clientMac = '" + mac + "'").limit(100000).collectAsList().listIterator();
 
             while (position_list.hasNext()) {
                 Row position = position_list.next();
-                double p_x = position.getDecimal(0).doubleValue();
-                double p_y = position.getDecimal(1).doubleValue();
+                //double p_x = position.getDecimal(0).doubleValue();
+                //double p_y = position.getDecimal(1).doubleValue();
                 LocalDateTime datetime = position.getTimestamp(2).toLocalDateTime();
                 //System.out.println("p_x:" + p_x + "-p_y:" + p_y + "-datetime:" + datetime);
                 if (previous_time == null) {
                     time_range = 0;
-                    distance = 0;
+                    //distance = 0;
                 } else {
                     Duration duration = Duration.between(previous_time, datetime);
                     time_range = duration.toSeconds();
-                    distance = distance(p_x, p_y, pre_p_x, pre_p_y);
-                    System.out.println("time_range:" + time_range+"===="+"distance:" + distance);
+                    //distance = distance(p_x, p_y, pre_p_x, pre_p_y);
+                    //System.out.println("time_range:" + time_range+"===="+"distance:" + distance);
                     //System.out.println("moving_range:" + moving_range);
                 }
 
                 if (0 < time_range && time_range <= 5) {
-                    total_distance = total_distance + distance;
+                    total_pairs = total_pairs + 1;
                 }
                 previous_time = datetime;
-                pre_p_x = p_x;
-                pre_p_y = p_y;
+                //pre_p_x = p_x;
+                //pre_p_y = p_y;
             }
-            result.put(mac, total_distance);
+            result.put(mac, total_pairs);
         }
         spark.close();
-        //save(result);
+        save(result);
     }
 
     /*
@@ -93,10 +93,10 @@ public class Question_2_1 {
         return R * c;
     }
 
-    private static void save(Map<String, Double> result) {
+    private static void save(Map<String, Long> result) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\workspace\\output_question_2_1_5s.txt"));
-            for (Map.Entry<String, Double> entry : result.entrySet()) {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\workspace\\output_question215s.txt"));
+            for (Map.Entry<String, Long> entry : result.entrySet()) {
                 writer.write("\""+entry.getKey() + "\"," + entry.getValue() + "\n");
                 //System.out.println("mac:" + entry.getKey());
                 //System.out.println("frequent:" + entry.getValue());
