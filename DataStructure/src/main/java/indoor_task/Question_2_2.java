@@ -35,15 +35,13 @@ public class Question_2_2 {
             double pre_p_x, pre_p_y;
             long time_range;
             double distance;
-            double moving_speed_average;
-            double total_distance = 0;
+            double moving_speed;
             LocalDateTime previous_time = null;
             pre_p_x = 0;
             pre_p_y = 0;
             String mac = row.getString(0);
             //System.out.println("mac:" + mac);
             ListIterator<Row> position_list = df.select("x", "y", "timeStamp").where("clientMac = '" + mac + "'").limit(100000).collectAsList().listIterator();
-            long total_time = 0;
 
             while (position_list.hasNext()) {
                 Row position = position_list.next();
@@ -63,16 +61,12 @@ public class Question_2_2 {
                 }
 
                 if (0 < time_range && time_range <= 5) {
-                    total_time = total_time + time_range;
-                    total_distance = total_distance + distance;
+                    moving_speed = distance / time_range;
+                    result.put(mac, moving_speed);
                 }
                 previous_time = datetime;
                 pre_p_x = p_x;
                 pre_p_y = p_y;
-            }
-            if(total_time > 0) {
-                moving_speed_average = total_distance / total_time;
-                result.put(mac, moving_speed_average);
             }
         }
         spark.close();
