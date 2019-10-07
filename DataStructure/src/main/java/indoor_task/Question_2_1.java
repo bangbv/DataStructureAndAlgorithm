@@ -60,7 +60,7 @@ public class Question_2_1 {
                     //System.out.println("moving_range:" + moving_range);
                 }
 
-                if (0 < time_range && time_range <= 5) {
+                if (0 < time_range && time_range <= 30) {
                     result.put(mac, distance);
                 }
                 previous_time = datetime;
@@ -93,7 +93,7 @@ public class Question_2_1 {
 
     private static void save(Map<String, Double> result) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\workspace\\output_question215s.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\RC46FW\\workspace\\output_question2130s.txt"));
             for (Map.Entry<String, Double> entry : result.entrySet()) {
                 writer.write("\""+entry.getKey() + "\"," + entry.getValue() + "\n");
                 //System.out.println("mac:" + entry.getKey());

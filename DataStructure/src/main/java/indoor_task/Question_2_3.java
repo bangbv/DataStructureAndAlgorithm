@@ -12,10 +12,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
-public class Question_2_2 {
+public class Question_2_3 {
 
     public static void main(String[] args) {
         SparkConf sparkConf = new SparkConf();
@@ -36,15 +35,14 @@ public class Question_2_2 {
             long time_range;
             double distance;
             double moving_speed;
+            double all_stop = 0;
             LocalDateTime previous_time = null;
             pre_p_x = 0;
             pre_p_y = 0;
             String mac = row.getString(0);
             //System.out.println("mac:" + mac);
-            ListIterator<Row> position_list = df.select("x", "y", "timeStamp").where("clientMac = '" + mac + "'").limit(100000).collectAsList().listIterator();
 
-            while (position_list.hasNext()) {
-                Row position = position_list.next();
+            for (Row position : df.select("x", "y", "timeStamp").where("clientMac = '" + mac + "'").limit(100000).collectAsList()) {
                 double p_x = position.getDecimal(0).doubleValue();
                 double p_y = position.getDecimal(1).doubleValue();
                 LocalDateTime datetime = position.getTimestamp(2).toLocalDateTime();
@@ -55,19 +53,23 @@ public class Question_2_2 {
                 } else {
                     Duration duration = Duration.between(previous_time, datetime);
                     time_range = duration.toSeconds();
-                    distance = distance(p_x, p_y, pre_p_x, pre_p_y);
                     //System.out.println("time_range:" + time_range+"===="+"distance:" + distance);
                     //System.out.println("moving_range:" + moving_range);
                 }
 
-                if (0 < time_range && time_range <= 60) {
+                if (0 < time_range) {
+                    distance = distance(p_x, p_y, pre_p_x, pre_p_y);
                     moving_speed = distance / time_range;
-                    result.put(mac, moving_speed);
+                    if (moving_speed <= 100){
+                        all_stop++;
+                    }
+
                 }
                 previous_time = datetime;
                 pre_p_x = p_x;
                 pre_p_y = p_y;
             }
+            result.put(mac, all_stop);
         }
         spark.close();
         save(result);
@@ -94,9 +96,9 @@ public class Question_2_2 {
 
     private static void save(Map<String, Double> result) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\RC46FW\\workspace\\output_question2260s.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\RC46FW\\workspace\\output_question23.txt"));
             for (Map.Entry<String, Double> entry : result.entrySet()) {
-                writer.write("\""+entry.getKey() + "\"," + entry.getValue() + "\n");
+                writer.write("\"" + entry.getKey() + "\"," + entry.getValue() + "\n");
                 //System.out.println("mac:" + entry.getKey());
                 //System.out.println("frequent:" + entry.getValue());
             }
