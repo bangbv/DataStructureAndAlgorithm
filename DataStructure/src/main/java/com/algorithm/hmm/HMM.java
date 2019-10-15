@@ -2,12 +2,7 @@ package com.algorithm.hmm;
 
 import java.text.*;
 
-/**
- * This class implements a Hidden Markov Model, as well as the Baum-Welch
- * Algorithm for training HMMs.
- * 
- * @author Holger Wunsch (wunsch@sfs.nphil.uni-tuebingen.de)
- */
+
 public class HMM {
 	/** number of states */
 	public int numStates;
@@ -39,6 +34,8 @@ public class HMM {
 		b = new double[numStates][sigmaSize];
 	}
 
+
+
 	/**
 	 * implementation of the Baum-Welch Algorithm for HMMs.
 	 * 
@@ -59,8 +56,20 @@ public class HMM {
 			 * calculation of Forward- und Backward Variables from the current model
 			 */
 			fwd = forwardProc(o);
+			DecimalFormat fmt = new DecimalFormat();
+			fmt.setMinimumFractionDigits(5);
+			fmt.setMaximumFractionDigits(5);
+			for (int i = 0; i < fwd.length; i++) {
+				for (int j = 0; j < fwd[i].length; j++)
+					System.out.print("fwd(" + i + "," + j + ") = " + fmt.format(fwd[i][j]) + "  ");
+				System.out.println();
+			}
 			bwd = backwardProc(o);
-
+			for (int i = 0; i < bwd.length; i++) {
+				for (int j = 0; j < bwd[i].length; j++)
+					System.out.print("bwd(" + i + "," + j + ") = " + fmt.format(bwd[i][j]) + "  ");
+				System.out.println();
+			}
 			/* re-estimation of initial state probabilities */
 			for (int i = 0; i < numStates; i++)
 				pi1[i] = gamma(i, 0, o, fwd, bwd);
@@ -111,8 +120,11 @@ public class HMM {
 		double[][] fwd = new double[numStates][T];
 
 		/* initialization (time 0) */
-		for (int i = 0; i < numStates; i++)
+		for (int i = 0; i < numStates; i++) {
+			System.out.print(pi[i] +"x"+ b[i][o[0]]+":");
 			fwd[i][0] = pi[i] * b[i][o[0]];
+			System.out.println(fwd[i][0]);
+		}
 
 		/* induction */
 		for (int t = 0; t <= T - 2; t++) {
