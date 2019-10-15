@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-public class Question_2_4 {
+public class Question_2_4_turn_all_stop {
 
     public static void main(String[] args) {
         SparkConf sparkConf = new SparkConf();
@@ -82,7 +82,7 @@ public class Question_2_4 {
                             angle = Math.toDegrees(
                                     Math.acos((Math.pow(distance_a, 2) + Math.pow(distance_b, 2) - Math.pow(distance_c, 2)) / (2 * distance_a * distance_b)));
                             // turns
-                            if (angle < 90) {
+                            if (angle > 90) {
                                 turns++;
                             }
                         }
@@ -126,7 +126,7 @@ public class Question_2_4 {
 
     private static void save(Map<String, Double> result) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\RC46FW\\workspace\\output_question24.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\RC46FW\\workspace\\output_question24_turn_all_stop.txt"));
             for (Map.Entry<String, Double> entry : result.entrySet()) {
                 writer.write("\"" + entry.getKey() + "\"," + entry.getValue() + "\n");
                 //System.out.println("mac:" + entry.getKey());
