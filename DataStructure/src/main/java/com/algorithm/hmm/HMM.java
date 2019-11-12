@@ -4,235 +4,242 @@ import java.text.*;
 
 
 public class HMM {
-	/** number of states */
-	public int numStates;
+    /**
+     * number of states
+     */
+    public int numStates;
+    /**
+     * size of output vocabulary
+     */
+    public int sigmaSize;
+    /**
+     * initial state probabilities
+     */
+    public double pi[];
+    /**
+     * transition probabilities
+     */
+    public double a[][];
 
-	/** size of output vocabulary */
-	public int sigmaSize;
+    /**
+     * emission probabilities
+     */
+    public double b[][];
 
-	/** initial state probabilities */
-	public double pi[];
+    DecimalFormat fmt = new DecimalFormat();
 
-	/** transition probabilities */
-	public double a[][];
+    /**
+     * initializes an HMM.
+     *
+     * @param numStates number of states
+     * @param sigmaSize size of output vocabulary
+     */
+    public HMM(int numStates, int sigmaSize) {
+        this.numStates = numStates;
+        this.sigmaSize = sigmaSize;
 
-	/** emission probabilities */
-	public double b[][];
+        pi = new double[numStates];
+        a = new double[numStates][numStates];
+        b = new double[numStates][sigmaSize];
 
-	/**
-	 * initializes an HMM.
-	 * 
-	 * @param numStates number of states
-	 * @param sigmaSize size of output vocabulary
-	 */
-	public HMM(int numStates, int sigmaSize) {
-		this.numStates = numStates;
-		this.sigmaSize = sigmaSize;
-
-		pi = new double[numStates];
-		a = new double[numStates][numStates];
-		b = new double[numStates][sigmaSize];
-	}
+        fmt.setMinimumFractionDigits(4);
+        fmt.setMaximumFractionDigits(4);
+    }
 
 
+    /**
+     * implementation of the Baum-Welch Algorithm for HMMs.
+     *
+     * @param o     the training set
+     * @param steps the number of steps
+     */
+    public void train(int[] o, int steps) {
+        int T = o.length;
+        double[][] fwd;
+        double[][] bwd;
 
-	/**
-	 * implementation of the Baum-Welch Algorithm for HMMs.
-	 * 
-	 * @param o     the training set
-	 * @param steps the number of steps
-	 */
-	public void train(int[] o, int steps) {
-		int T = o.length;
-		double[][] fwd;
-		double[][] bwd;
+        double pi1[] = new double[numStates];
+        double a1[][] = new double[numStates][numStates];
+        double b1[][] = new double[numStates][sigmaSize];
 
-		double pi1[] = new double[numStates];
-		double a1[][] = new double[numStates][numStates];
-		double b1[][] = new double[numStates][sigmaSize];
+        for (int s = 0; s < steps; s++) {
+            /*
+             * calculation of Forward- und Backward Variables from the current model
+             */
+            fwd = forwardProc(o);
+            printFB(fwd);
+            bwd = backwardProc(o);
+            printFB(bwd);
+            /* re-estimation of initial state probabilities */
+            for (int i = 0; i < numStates; i++)
+                pi1[i] = gamma(i, 0, o, fwd, bwd);
+            /* re-estimation of transition probabilities */
+            System.out.println("re-estimation of transition probabilities");
+            for (int i = 0; i < numStates; i++) {
+                for (int j = 0; j < numStates; j++) {
+                    double num = 0, denom = 0;
+                    for (int t = 0; t <= T - 1; t++) {
+                        num += p(t, i, j, o, fwd, bwd);
+                        denom += gamma(i, t, o, fwd, bwd);
+                    }
+                    a1[i][j] = num / denom;
+                    System.out.println("a1(" + i + "," + j + ") = " + fmt.format(num) + "/" + fmt.format(denom) + "=" + fmt.format(a1[i][j]) + "  ");
+                }
+            }
+            /* re-estimation of emission probabilities */
+            System.out.println("re-estimation of emission probabilities");
+            for (int i = 0; i < numStates; i++) {
+                for (int k = 0; k < sigmaSize; k++) {
+                    double num = 0, denom = 0;
+                    for (int t = 0; t <= T - 1; t++) {
+                        double g = gamma(i, t, o, fwd, bwd);
+                        num += g * (k == o[t] ? 1 : 0);
+                        denom += g;
+                    }
+                    b1[i][k] = num / denom;
+                }
+            }
+            pi = pi1;
+            a = a1;
+            b = b1;
+        }
+    }
 
-		for (int s = 0; s < steps; s++) {
-			/*
-			 * calculation of Forward- und Backward Variables from the current model
-			 */
-			fwd = forwardProc(o);
-			DecimalFormat fmt = new DecimalFormat();
-			fmt.setMinimumFractionDigits(5);
-			fmt.setMaximumFractionDigits(5);
-			for (int i = 0; i < fwd.length; i++) {
-				for (int j = 0; j < fwd[i].length; j++)
-					System.out.print("fwd(" + i + "," + j + ") = " + fmt.format(fwd[i][j]) + "  ");
-				System.out.println();
-			}
-			bwd = backwardProc(o);
-			for (int i = 0; i < bwd.length; i++) {
-				for (int j = 0; j < bwd[i].length; j++)
-					System.out.print("bwd(" + i + "," + j + ") = " + fmt.format(bwd[i][j]) + "  ");
-				System.out.println();
-			}
-			/* re-estimation of initial state probabilities */
-			for (int i = 0; i < numStates; i++)
-				pi1[i] = gamma(i, 0, o, fwd, bwd);
+    /**
+     * calculation of Forward-Variables f(i,t) for state i at time t for output
+     * sequence O with the current HMM parameters
+     * @param o the output sequence O
+     * @return an array f(i,t) over states and times, containing the
+     */
+    public double[][] forwardProc(int[] o) {
+        int T = o.length;
+        double[][] fwd = new double[numStates][T];
+        /* initialization (time 0) */
+        for (int i = 0; i < numStates; i++) {
+            System.out.print(pi[i] + "x" + b[i][o[0]] + ":");
+            fwd[i][0] = pi[i] * b[i][o[0]];
+            System.out.print(fmt.format(fwd[i][0]));
+        }
+        /* induction */
+        for (int t = 0; t <= T - 2; t++) {
+            for (int j = 0; j < numStates; j++) {
+                System.out.print("fwd(" + j + "," + (t + 1) + ") = ");
+                fwd[j][t + 1] = 0;
+                for (int i = 0; i < numStates; i++) {
+                    fwd[j][t + 1] += (fwd[i][t] * a[i][j] * b[j][o[t + 1]]);
+                }
+                System.out.print(fmt.format(fwd[j][t + 1]) + "|");
+            }
+            System.out.println();
+        }
+        return fwd;
+    }
 
-			/* re-estimation of transition probabilities */
-			for (int i = 0; i < numStates; i++) {
-				for (int j = 0; j < numStates; j++) {
-					double num = 0;
-					double denom = 0;
-					for (int t = 0; t <= T - 1; t++) {
-						num += p(t, i, j, o, fwd, bwd);
-						denom += gamma(i, t, o, fwd, bwd);
-					}
-					a1[i][j] = divide(num, denom);
-				}
-			}
+    /**
+     * calculation of Backward-Variables b(i,t) for state i at time t for output
+     * sequence O with the current HMM parameters
+     * @param o the output sequence O
+     * @return an array b(i,t) over states and times, containing the
+     * Backward-Variables.
+     */
+    public double[][] backwardProc(int[] o) {
+        int T = o.length;
+        double[][] bwd = new double[numStates][T];
+        /* initialization (time 0) */
+        for (int i = 0; i < numStates; i++)
+            bwd[i][T - 1] = 1;
+        /* induction */
+        for (int t = T - 2; t >= 0; t--) {
+            for (int i = 0; i < numStates; i++) {
+                bwd[i][t] = 0;
+                for (int j = 0; j < numStates; j++)
+                    bwd[i][t] += (bwd[j][t + 1] * a[i][j] * b[j][o[t + 1]]);
+            }
+        }
+        return bwd;
+    }
 
-			/* re-estimation of emission probabilities */
-			for (int i = 0; i < numStates; i++) {
-				for (int k = 0; k < sigmaSize; k++) {
-					double num = 0;
-					double denom = 0;
+    /**
+     * calculation of probability P(X_t = s_i, X_t+1 = s_j | O, m).
+     * @param t   time t
+     * @param i   the number of state s_i
+     * @param j   the number of state s_j
+     * @param o   an output sequence o
+     * @param fwd the Forward-Variables for o
+     * @param bwd the Backward-Variables for o
+     */
+    public double p(int t, int i, int j, int[] o, double[][] fwd, double[][] bwd) {
+        double num;
+        if (t == o.length - 1)
+            num = fwd[i][t] * a[i][j];
+        else
+            num = fwd[i][t] * a[i][j] * b[j][o[t + 1]] * bwd[j][t + 1];
+        if (t < 2) {
+            System.out.println("p:num = fwd(" + i + "," + t + ") * " + "bwd(" + j + "," + (t + 1) + ")=" + fmt.format(num));
+        }
+        double denom = 0;
+        for (int k = 0; k < numStates; k++) {
+            denom += (fwd[k][t] * bwd[k][t]);
+            if (t < 2) {
+                System.out.print("p: denom += fwd(" + k + "," + t + ") * " + "bwd(" + k + "," + t + ")=" + fmt.format(denom) + "   ");
+            }
+        }
+        if (t < 2) {
+            System.out.println();
+        }
+        return num / denom;
+    }
 
-					for (int t = 0; t <= T - 1; t++) {
-						double g = gamma(i, t, o, fwd, bwd);
-						num += g * (k == o[t] ? 1 : 0);
-						denom += g;
-					}
-					b1[i][k] = divide(num, denom);
-				}
-			}
-			pi = pi1;
-			a = a1;
-			b = b1;
-		}
-	}
+    /**
+     * computes gamma(i, t)
+     */
+    public double gamma(int i, int t, int[] o, double[][] fwd, double[][] bwd) {
+        double num = fwd[i][t] * bwd[i][t];
+        if (t < 2) {
+            System.out.println("gamma:num = fwd(" + i + "," + t + ") * " + "bwd(" + i + "," + t + ")=" + fmt.format(num));
+        }
+        double denom = 0;
+        for (int j = 0; j < numStates; j++) {
+            denom += fwd[j][t] * bwd[j][t];
+            if (t < 2) {
+                System.out.print("gamma: denom += fwd(" + j + "," + t + ") * " + "bwd(" + j + "," + t + ")=" + fmt.format(denom) + "   ");
+            }
 
-	/**
-	 * calculation of Forward-Variables f(i,t) for state i at time t for output
-	 * sequence O with the current HMM parameters
-	 * 
-	 * @param o the output sequence O
-	 * @return an array f(i,t) over states and times, containing the
-	 *         Forward-variables.
-	 */
-	public double[][] forwardProc(int[] o) {
-		int T = o.length;
-		double[][] fwd = new double[numStates][T];
+        }
+        if (t < 2) {
+            System.out.println();
+        }
+        return num / denom;
+    }
 
-		/* initialization (time 0) */
-		for (int i = 0; i < numStates; i++) {
-			System.out.print(pi[i] +"x"+ b[i][o[0]]+":");
-			fwd[i][0] = pi[i] * b[i][o[0]];
-			System.out.println(fwd[i][0]);
-		}
+    /**
+     * prints all the parameters of an HMM
+     */
+    public void print() {
 
-		/* induction */
-		for (int t = 0; t <= T - 2; t++) {
-			for (int j = 0; j < numStates; j++) {
-				fwd[j][t + 1] = 0;
-				for (int i = 0; i < numStates; i++)
-					fwd[j][t + 1] += (fwd[i][t] * a[i][j]);
-				fwd[j][t + 1] *= b[j][o[t + 1]];
-			}
-		}
+        for (int i = 0; i < numStates; i++)
+            System.out.println("pi(" + i + ") = " + fmt.format(pi[i]));
+        System.out.println();
 
-		return fwd;
-	}
+        for (int i = 0; i < numStates; i++) {
+            for (int j = 0; j < numStates; j++)
+                System.out.print("a(" + i + "," + j + ") = " + fmt.format(a[i][j]) + "  ");
+            System.out.println();
+        }
 
-	/**
-	 * calculation of Backward-Variables b(i,t) for state i at time t for output
-	 * sequence O with the current HMM parameters
-	 * 
-	 * @param o the output sequence O
-	 * @return an array b(i,t) over states and times, containing the
-	 *         Backward-Variables.
-	 */
-	public double[][] backwardProc(int[] o) {
-		int T = o.length;
-		double[][] bwd = new double[numStates][T];
+        System.out.println();
+        for (int i = 0; i < numStates; i++) {
+            for (int k = 0; k < sigmaSize; k++)
+                System.out.print("b(" + i + "," + k + ") = " + fmt.format(b[i][k]) + "  ");
+            System.out.println();
+        }
+    }
 
-		/* initialization (time 0) */
-		for (int i = 0; i < numStates; i++)
-			bwd[i][T - 1] = 1;
-
-		/* induction */
-		for (int t = T - 2; t >= 0; t--) {
-			for (int i = 0; i < numStates; i++) {
-				bwd[i][t] = 0;
-				for (int j = 0; j < numStates; j++)
-					bwd[i][t] += (bwd[j][t + 1] * a[i][j] * b[j][o[t + 1]]);
-			}
-		}
-
-		return bwd;
-	}
-
-	/**
-	 * calculation of probability P(X_t = s_i, X_t+1 = s_j | O, m).
-	 * 
-	 * @param t   time t
-	 * @param i   the number of state s_i
-	 * @param j   the number of state s_j
-	 * @param o   an output sequence o
-	 * @param fwd the Forward-Variables for o
-	 * @param bwd the Backward-Variables for o
-	 * @return P
-	 */
-	public double p(int t, int i, int j, int[] o, double[][] fwd, double[][] bwd) {
-		double num;
-		if (t == o.length - 1)
-			num = fwd[i][t] * a[i][j];
-		else
-			num = fwd[i][t] * a[i][j] * b[j][o[t + 1]] * bwd[j][t + 1];
-
-		double denom = 0;
-
-		for (int k = 0; k < numStates; k++)
-			denom += (fwd[k][t] * bwd[k][t]);
-
-		return divide(num, denom);
-	}
-
-	/** computes gamma(i, t) */
-	public double gamma(int i, int t, int[] o, double[][] fwd, double[][] bwd) {
-		double num = fwd[i][t] * bwd[i][t];
-		double denom = 0;
-
-		for (int j = 0; j < numStates; j++)
-			denom += fwd[j][t] * bwd[j][t];
-
-		return divide(num, denom);
-	}
-
-	/** prints all the parameters of an HMM */
-	public void print() {
-		DecimalFormat fmt = new DecimalFormat();
-		fmt.setMinimumFractionDigits(5);
-		fmt.setMaximumFractionDigits(5);
-
-		for (int i = 0; i < numStates; i++)
-			System.out.println("pi(" + i + ") = " + fmt.format(pi[i]));
-		System.out.println();
-
-		for (int i = 0; i < numStates; i++) {
-			for (int j = 0; j < numStates; j++)
-				System.out.print("a(" + i + "," + j + ") = " + fmt.format(a[i][j]) + "  ");
-			System.out.println();
-		}
-
-		System.out.println();
-		for (int i = 0; i < numStates; i++) {
-			for (int k = 0; k < sigmaSize; k++)
-				System.out.print("b(" + i + "," + k + ") = " + fmt.format(b[i][k]) + "  ");
-			System.out.println();
-		}
-	}
-
-	/** divides two doubles. 0 / 0 = 0! */
-	public double divide(double n, double d) {
-		if (n == 0)
-			return 0;
-		else
-			return n / d;
-	}
+    private void printFB(double[][] fb) {
+        for (int i = 0; i < fb.length; i++) {
+            for (int j = 0; j < fb[i].length; j++)
+                System.out.print("bwd(" + i + "," + j + ") = " + fmt.format(fb[i][j]) + "  ");
+            System.out.println();
+        }
+    }
 }
