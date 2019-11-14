@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class UJIIndoorLoc_analytics {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         SparkConf sparkConf = new SparkConf();
         SparkContext sc = new SparkContext("local", "spark-mysql-test", sparkConf);
         SparkSession spark = new SparkSession(sc);
@@ -25,10 +25,11 @@ public class UJIIndoorLoc_analytics {
 
         String sql = "(select * from location20180101) as table_1";
 
-        Dataset<Row> df = spark.read().format("csv").option("header", "true").load("C:\\Users\\RC46FW\\Documents\\data\\1485881443_7042618_Train.csv");
-
-        Dataset<Row> mac_number = df.select("LONGITUDE","LATITUDE","TIMESTAMP","PHONEID").limit(20);
-        mac_number.show();
+        Dataset<Row> df = spark.read().format("csv").option("header", "true").load("C:\\Users\\RC46FW\\Documents\\data\\Data_Set\\IPIN2016\\1485881443_7042618_Train.csv");
+        df.createTempView("my_table");
+        //Dataset<Row> mac_number = df.select("LONGITUDE","LATITUDE","TIMESTAMP","PHONEID").limit(20);
+        Long raw_number = df.select("*").count();
+        System.out.println(raw_number);
         spark.close();
     }
 }
