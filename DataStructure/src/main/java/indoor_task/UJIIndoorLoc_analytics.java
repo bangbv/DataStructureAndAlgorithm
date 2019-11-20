@@ -6,30 +6,39 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class UJIIndoorLoc_analytics {
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         SparkConf sparkConf = new SparkConf();
         SparkContext sc = new SparkContext("local", "spark-mysql-test", sparkConf);
         SparkSession spark = new SparkSession(sc);
-        Map<String, Double> result = new HashMap<>();
 
         String sql = "(select * from location20180101) as table_1";
 
         Dataset<Row> df = spark.read().format("csv").option("header", "true").load("C:\\Users\\RC46FW\\Documents\\data\\Data_Set\\IPIN2016\\1485881443_7042618_Train.csv");
         df.createTempView("my_table");
-        //Dataset<Row> mac_number = df.select("LONGITUDE","LATITUDE","TIMESTAMP","PHONEID").limit(20);
-        Long raw_number = df.select("*").count();
-        System.out.println(raw_number);
+        //Dataset<Row> user = df.select("TIMESTAMP").where("USERID = 1").limit(1);
+        Dataset<Row> user = df.select("TIMESTAMP","LONGITUDE", "LATITUDE").where("USERID = 1").limit(100000);
+        user.show();
+//        for (Row row : user.collectAsList()) {
+//            String time = row.getString(0);
+//            System.out.println(time);
+//        }
+        for (Row row : user.collectAsList()) {
+            String time = row.getString(0);
+            //Timestamp datetime = new Timestamp(Long.parseLong(time));
+            // convert seconds to milliseconds
+            Date date = new java.util.Date(Long.parseLong(time) * 1000L);
+            // the format of your date
+            SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+            // give a timezone reference for formatting (see comment at the bottom)
+            sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT+2"));
+            String formattedDate = sdf.format(date);
+            System.out.println(formattedDate +"|"+ row.get(1)+"|"+row.get(1));
+        }
         spark.close();
     }
 }
