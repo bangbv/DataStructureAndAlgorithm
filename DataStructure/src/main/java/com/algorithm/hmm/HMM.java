@@ -67,14 +67,14 @@ public class HMM {
              * calculation of Forward- und Backward Variables from the current model
              */
             fwd = forwardProc(o);
-            printFB(fwd);
+            //printFB(fwd);
             bwd = backwardProc(o);
-            printFB(bwd);
+            //printFB(bwd);
             /* re-estimation of initial state probabilities */
             for (int i = 0; i < numStates; i++)
                 pi1[i] = gamma(i, 0, o, fwd, bwd);
             /* re-estimation of transition probabilities */
-            System.out.println("re-estimation of transition probabilities");
+//            System.out.println("re-estimation of transition probabilities");
             for (int i = 0; i < numStates; i++) {
                 for (int j = 0; j < numStates; j++) {
                     double num = 0, denom = 0;
@@ -83,11 +83,11 @@ public class HMM {
                         denom += gamma(i, t, o, fwd, bwd);
                     }
                     a1[i][j] = num / denom;
-                    System.out.println("a1(" + i + "," + j + ") = " + fmt.format(num) + "/" + fmt.format(denom) + "=" + fmt.format(a1[i][j]) + "  ");
+//                    System.out.println("a1(" + i + "," + j + ") = " + fmt.format(num) + "/" + fmt.format(denom) + "=" + fmt.format(a1[i][j]) + "  ");
                 }
             }
             /* re-estimation of emission probabilities */
-            System.out.println("re-estimation of emission probabilities");
+//            System.out.println("re-estimation of emission probabilities");
             for (int i = 0; i < numStates; i++) {
                 for (int k = 0; k < sigmaSize; k++) {
                     double num = 0, denom = 0;
@@ -116,21 +116,21 @@ public class HMM {
         double[][] fwd = new double[numStates][T];
         /* initialization (time 0) */
         for (int i = 0; i < numStates; i++) {
-            System.out.print(pi[i] + "x" + b[i][o[0]] + ":");
+            // System.out.print(pi[i] + "x" + b[i][o[0]] + ":");
             fwd[i][0] = pi[i] * b[i][o[0]];
-            System.out.print(fmt.format(fwd[i][0]));
+            // System.out.print(fmt.format(fwd[i][0]));
         }
         /* induction */
         for (int t = 0; t <= T - 2; t++) {
             for (int j = 0; j < numStates; j++) {
-                System.out.print("fwd(" + j + "," + (t + 1) + ") = ");
+                // System.out.print("fwd(" + j + "," + (t + 1) + ") = ");
                 fwd[j][t + 1] = 0;
                 for (int i = 0; i < numStates; i++) {
                     fwd[j][t + 1] += (fwd[i][t] * a[i][j] * b[j][o[t + 1]]);
                 }
-                System.out.print(fmt.format(fwd[j][t + 1]) + "|");
+                // System.out.print(fmt.format(fwd[j][t + 1]) + "|");
             }
-            System.out.println();
+            // System.out.println();
         }
         return fwd;
     }
@@ -174,19 +174,19 @@ public class HMM {
             num = fwd[i][t] * a[i][j];
         else
             num = fwd[i][t] * a[i][j] * b[j][o[t + 1]] * bwd[j][t + 1];
-        if (t < 2) {
-            System.out.println("p:num = fwd(" + i + "," + t + ") * " + "bwd(" + j + "," + (t + 1) + ")=" + fmt.format(num));
-        }
+//        if (t < 2) {
+//            System.out.println("p:num = fwd(" + i + "," + t + ") * " + "bwd(" + j + "," + (t + 1) + ")=" + fmt.format(num));
+//        }
         double denom = 0;
         for (int k = 0; k < numStates; k++) {
             denom += (fwd[k][t] * bwd[k][t]);
-            if (t < 2) {
-                System.out.print("p: denom += fwd(" + k + "," + t + ") * " + "bwd(" + k + "," + t + ")=" + fmt.format(denom) + "   ");
-            }
+//            if (t < 2) {
+//                System.out.print("p: denom += fwd(" + k + "," + t + ") * " + "bwd(" + k + "," + t + ")=" + fmt.format(denom) + "   ");
+//            }
         }
-        if (t < 2) {
-            System.out.println();
-        }
+//        if (t < 2) {
+//            System.out.println();
+//        }
         return num / denom;
     }
 
@@ -195,20 +195,20 @@ public class HMM {
      */
     public double gamma(int i, int t, int[] o, double[][] fwd, double[][] bwd) {
         double num = fwd[i][t] * bwd[i][t];
-        if (t < 2) {
-            System.out.println("gamma:num = fwd(" + i + "," + t + ") * " + "bwd(" + i + "," + t + ")=" + fmt.format(num));
-        }
+//        if (t < 2) {
+//            System.out.println("gamma:num = fwd(" + i + "," + t + ") * " + "bwd(" + i + "," + t + ")=" + fmt.format(num));
+//        }
         double denom = 0;
         for (int j = 0; j < numStates; j++) {
             denom += fwd[j][t] * bwd[j][t];
-            if (t < 2) {
-                System.out.print("gamma: denom += fwd(" + j + "," + t + ") * " + "bwd(" + j + "," + t + ")=" + fmt.format(denom) + "   ");
-            }
+//            if (t < 2) {
+//                System.out.print("gamma: denom += fwd(" + j + "," + t + ") * " + "bwd(" + j + "," + t + ")=" + fmt.format(denom) + "   ");
+//            }
 
         }
-        if (t < 2) {
-            System.out.println();
-        }
+//        if (t < 2) {
+//            System.out.println();
+//        }
         return num / denom;
     }
 

@@ -53,8 +53,9 @@ public class Question_2_1 {
                     time_range = 0;
                     distance = 0;
                 } else {
-                    Duration duration = Duration.between(previous_time, datetime);
-                    time_range = duration.toSeconds();
+//                    Duration duration = Duration.between(previous_time, datetime);
+//                    time_range = duration.toSeconds();
+                    time_range = 0;
                     distance = distance(p_x, p_y, pre_p_x, pre_p_y);
                     //System.out.println("time_range:" + time_range+"===="+"distance:" + distance);
                     //System.out.println("moving_range:" + moving_range);

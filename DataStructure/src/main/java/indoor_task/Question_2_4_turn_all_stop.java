@@ -62,10 +62,12 @@ public class Question_2_4_turn_all_stop {
                         time_range = 0;
                         //distance = 0;
                     } else {
-                        Duration duration = Duration.between(previous_time, datetime);
-                        time_range = duration.toSeconds();
-                        Duration next_duration = Duration.between(datetime, next_datetime);
-                        next_time_range = next_duration.toSeconds();
+//                        Duration duration = Duration.between(previous_time, datetime);
+//                        time_range = duration.toSeconds();
+                        time_range = 0;
+//                        Duration next_duration = Duration.between(datetime, next_datetime);
+//                        next_time_range = next_duration.toSeconds();
+                        next_time_range = 0;
                         //System.out.println("time_range:" + time_range+"===="+"distance:" + distance);
                         //System.out.println("moving_range:" + moving_range);
                     }

@@ -24,6 +24,7 @@ public class BinaryTree {
 	}
 
 	void levelOrder(Node root, int level) {
+		System.out.println("LevelOrder");
 		if (root != null) {
 			Queue<Node> q = new LinkedList<>();
 			q.add(root);
@@ -39,9 +40,11 @@ public class BinaryTree {
 				level++;
 			}
 		}
+		System.out.println();
 	}
 	
 	void topView(Node root) {
+		System.out.println("topView");
 		if (root != null) {
 			System.out.print(root.data + " ");
 			topView(root.right);

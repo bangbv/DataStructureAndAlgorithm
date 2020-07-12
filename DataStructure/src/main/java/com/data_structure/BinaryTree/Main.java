@@ -20,8 +20,8 @@ public class Main {
 			root = bt.insert(root, data);
 		}
 		reader.close();
-		//bt.levelOrder(root,0);
-		//bt.topView(root);
+		bt.levelOrder(root,0);
+		bt.topView(root);
 		bt.lca(root, 6, 3);
 	}
 }

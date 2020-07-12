@@ -48,7 +48,7 @@ public class RoadsAndLibraries_v2 {
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(
-				"/Users/bvbang/Documents/workspace/DataStructureAndAlgorithm/DataStructure/src/main/resources/input04.txt"));
+				"C:\\Users\\RC46FW\\workspace\\DataStructureAndAlgorithm\\DataStructure\\src\\main\\resources\\input04.txt"));
 		int q = Integer.valueOf(reader.readLine());
 		for (int qItr = 0; qItr < q; qItr++) {
 			String[] ls = reader.readLine().split(" ");

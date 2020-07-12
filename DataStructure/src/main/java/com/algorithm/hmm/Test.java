@@ -36,7 +36,8 @@ public class Test {
             System.out.println("Initial Parameters:");
             hmm.print();
 
-            hmm.train(o, Integer.parseInt(argv[0]));
+            // hmm.train(o, Integer.parseInt(argv[0]));
+            hmm.train(o, 10);
 
             System.out.println();
 

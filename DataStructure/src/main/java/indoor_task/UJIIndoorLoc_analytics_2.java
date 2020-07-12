@@ -16,29 +16,33 @@ public class UJIIndoorLoc_analytics_2 {
         SparkContext sc = new SparkContext("local", "spark-mysql-test", sparkConf);
         SparkSession spark = new SparkSession(sc);
 
-        String sql = "(select * from location20180101) as table_1";
+        String sql = "select count(*) from global_temp.my_table group by LONGITUDE,LATITUDE";
 
-        Dataset<Row> df = spark.read().format("csv").option("header", "true").load("C:\\Users\\RC46FW\\Documents\\data\\Data_Set\\IPIN2016\\1485881443_7042618_Train.csv");
-        df.createTempView("my_table");
-        //Dataset<Row> user = df.select("TIMESTAMP").where("USERID = 1").limit(1);
-        Dataset<Row> user = df.select("TIMESTAMP","LONGITUDE", "LATITUDE").where("USERID = 1").limit(100000);
+        //String path = "C:\\Users\\RC46FW\\Google Drive\\PhD\\data\\Data_Set\\UJIIndoor_Loc\\1478167720_9233432_trainingData.csv"; //UJIIndoor_Loc
+        String path = "C:\\Users\\RC46FW\\Google Drive\\PhD\\data\\Data_Set\\IPIN2016\\1485881443_7042618_Train.csv"; //IPIN2016
+        //String path = "C:\\Users\\RC46FW\\Google Drive\\PhD\\data\\Data_Set\\Tampere_University\\TAMPERE1_training.csv"; //Tampere_University
+        //String path = "C:\\Users\\RC46FW\\Google Drive\\PhD\\data\\Data_Set\\Alcala_Tutorial_2017\\1490779198_4046512_alc2017_training_set.csv"; //Alcala_Tutorial_2017
+
+        Dataset<Row> df = spark.read().format("csv").option("header", "true").load(path);
+        df.createGlobalTempView("my_table");
+        //Dataset<Row> user = df.select("LONGITUDE","LATITUDE").groupBy("LONGITUDE","LATITUDE").count();
+        Dataset<Row> user = df.select("*").limit(4);
+        //spark.sql(sql).show();
+        //long result = 0;
         user.show();
+        //System.out.println(result);
 //        for (Row row : user.collectAsList()) {
 //            String time = row.getString(0);
-//            System.out.println(time);
+//            //Timestamp datetime = new Timestamp(Long.parseLong(time));
+//            // convert seconds to milliseconds
+//            Date date = new Date(Long.parseLong(time) * 1000L);
+//            // the format of your date
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+//            // give a timezone reference for formatting (see comment at the bottom)
+//            sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT+2"));
+//            String formattedDate = sdf.format(date);
+//            System.out.println(formattedDate +"|"+ row.get(1)+"|"+row.get(2));
 //        }
-        for (Row row : user.collectAsList()) {
-            String time = row.getString(0);
-            //Timestamp datetime = new Timestamp(Long.parseLong(time));
-            // convert seconds to milliseconds
-            Date date = new Date(Long.parseLong(time) * 1000L);
-            // the format of your date
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-            // give a timezone reference for formatting (see comment at the bottom)
-            sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT+2"));
-            String formattedDate = sdf.format(date);
-            System.out.println(formattedDate +"|"+ row.get(1)+"|"+row.get(1));
-        }
         spark.close();
     }
 }

@@ -61,10 +61,12 @@ public class Question_2_4_turns_all_move {
                     if (previous_time == null) {
                         time_range = 0;
                     } else {
-                        Duration duration = Duration.between(previous_time, datetime);
-                        time_range = duration.toSeconds();
-                        Duration next_duration = Duration.between(datetime, next_datetime);
-                        next_time_range = next_duration.toSeconds();
+//                        Duration duration = Duration.between(previous_time, datetime);
+//                        time_range = duration.toSeconds();
+//                        Duration next_duration = Duration.between(datetime, next_datetime);
+//                        next_time_range = next_duration.toSeconds();
+                        time_range = 0;
+                        next_time_range = 0;
                         //System.out.println("time_range:" + time_range+"===="+"distance:" + distance);
                         //System.out.println("moving_range:" + moving_range);
                     }

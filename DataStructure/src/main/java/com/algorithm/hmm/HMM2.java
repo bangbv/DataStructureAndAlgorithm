@@ -192,8 +192,7 @@ class HMM2 {
         return hmm;
     }
 
-    private static double fwdbwd(HMM2 hmm, String[] xs, Forward[] fwds,
-                                 Backward[] bwds, double[] logP) {
+    private static double fwdbwd(HMM2 hmm, String[] xs, Forward[] fwds, Backward[] bwds, double[] logP) {
         double loglikelihood = 0;
         for (int s=0; s<xs.length; s++) {
             fwds[s] = new Forward(hmm, xs[s]);

@@ -1,4 +1,5 @@
 package com.algorithm.sort;
+
 /*
 The steps are:
 1: Pick an element, called a pivot, from the array.
@@ -32,31 +33,47 @@ algorithm partition(A, lo, hi) is
     return i
  */
 public class QuickSort {
-	
-	void quicksort(int[] a,int lo,int hi) {
-		if(lo<hi) {
-			int p = partition(a,lo,hi);
-			quicksort(a,lo,p-1);
-			quicksort(a,p+1,hi);
-		}
-	}
-	
-	int partition(int[] a,int lo, int hi) {
-		int pivot  = a[hi];
-		int i = lo;
-		for(int j = lo;j< hi;j++) {
-			if(a[j]<pivot){
-				swap(a,i,j);
-				i = i+1;
-			}
-		}
-		swap(a,i,hi);
-		return i;
-	}
-	
-	void swap(int[] a,int x, int y) {
-		int temp = a[x];
-		a[x] = a[y];
-		a[y] = temp;
-	}
+    public static void main(String[] args) {
+        System.out.println("QuickSort");
+        int[] input = {1, 4, 5, 3, 8, 9};
+        QuickSort qs = new QuickSort();
+        qs.myPrint(input);
+        qs.quicksort(input, 0, input.length - 1);
+        qs.myPrint(input);
+    }
+
+    public void quicksort(int[] a, int lo, int hi) {
+        if (lo < hi) {
+            int p = partition(a, lo, hi);
+            quicksort(a, lo, p - 1);
+            quicksort(a, p + 1, hi);
+        }
+    }
+
+    int partition(int[] a, int lo, int hi) {
+        //int pivot = a[hi];
+        int pivot = a[lo];
+        int i = lo;
+        for (int j = lo; j < hi; j++) {
+            if (a[j] < pivot) {
+                swap(a, i, j);
+                i = i + 1;
+            }
+        }
+        swap(a, i, hi);
+        return i;
+    }
+
+    static void swap(int[] a, int x, int y) {
+        int temp = a[x];
+        a[x] = a[y];
+        a[y] = temp;
+    }
+
+    private void myPrint(int[] arr) {
+        for (int value : arr) {
+            System.out.print(value + "	");
+        }
+        System.out.println();
+    }
 }

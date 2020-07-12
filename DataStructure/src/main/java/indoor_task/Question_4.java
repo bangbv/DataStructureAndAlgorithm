@@ -48,20 +48,23 @@ public class Question_4 {
                     range = 0;
                     first_time = datetime;
                 } else {
-                    Duration duration = Duration.between(previous_time, datetime);
-                    System.out.println("Seconds:" + duration.toSeconds());
-                    range = duration.toSeconds();
+//                    Duration duration = Duration.between(previous_time, datetime);
+//                    System.out.println("Seconds:" + duration.toSeconds());
+//                    range = duration.toSeconds();
+                    range = 0;
                 }
 
                 if (range > 1200) {
                     Duration range_duration = Duration.between(first_time, previous_time);
-                    total_time = total_time + range_duration.toSeconds();
+                    // total_time = total_time + range_duration.toSeconds();
+                    total_time = total_time;
                     first_time = datetime;
                 }
                 previous_time = datetime;
             }
-            Duration range_duration = Duration.between(first_time, previous_time);
-            total_time = total_time + range_duration.toSeconds();
+//            Duration range_duration = Duration.between(first_time, previous_time);
+//            total_time = total_time + range_duration.toSeconds();
+            total_time = 0;
             long frequent = total_time / row_number;
             result.put(mac, frequent);
             previous_time = null;

@@ -18,10 +18,10 @@ public class UJIIndoorLoc_analytics {
 
         String sql = "(select * from location20180101) as table_1";
 
-        Dataset<Row> df = spark.read().format("csv").option("header", "true").load("C:\\Users\\RC46FW\\Documents\\data\\Data_Set\\IPIN2016\\1485881443_7042618_Train.csv");
+        Dataset<Row> df = spark.read().format("csv").option("header", "true").load("C:\\Users\\RC46FW\\Documents\\data\\UJIIndoorLoc\\validationData.csv");
         df.createTempView("my_table");
         //Dataset<Row> user = df.select("TIMESTAMP").where("USERID = 1").limit(1);
-        Dataset<Row> user = df.select("TIMESTAMP","LONGITUDE", "LATITUDE").where("USERID = 1").limit(100000);
+        Dataset<Row> user = df.select("TIMESTAMP","LONGITUDE", "LATITUDE", "FLOOR", "BUILDINGID").where("PHONEID = 13 AND FLOOR = 1 AND BUILDINGID = 1").limit(100000);
         user.show();
 //        for (Row row : user.collectAsList()) {
 //            String time = row.getString(0);
@@ -33,11 +33,11 @@ public class UJIIndoorLoc_analytics {
             // convert seconds to milliseconds
             Date date = new java.util.Date(Long.parseLong(time) * 1000L);
             // the format of your date
-            SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+            SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             // give a timezone reference for formatting (see comment at the bottom)
             sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT+2"));
             String formattedDate = sdf.format(date);
-            System.out.println(formattedDate +"|"+ row.get(1)+"|"+row.get(1));
+            System.out.println(formattedDate +"|"+ row.get(1)+"|"+row.get(2)+"|"+row.get(3));
         }
         spark.close();
     }
