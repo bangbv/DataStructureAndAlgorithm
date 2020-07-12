@@ -1,5 +1,7 @@
 /target/
+/datastructure.xml
 /DataStructure.iml
 /.settings/
 /.idea/
 .metadata/
+/datastructure.properties
