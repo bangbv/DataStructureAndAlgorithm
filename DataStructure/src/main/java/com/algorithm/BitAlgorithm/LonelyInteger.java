@@ -5,28 +5,29 @@ import java.util.Map;
 
 public class LonelyInteger {
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-	static int lonelyinteger(int[] a) {
-        Map uniqueNumber = new HashMap<Integer,Integer>();
-        for(int i=0;i<a.length;i++){
-        		if(uniqueNumber.get(a[i]) == null) {
-        			uniqueNumber.put(a[i],1);
-        		}else {
-        			uniqueNumber.remove(a[i]);
-        		}
-        }
+    static int lonelyInteger(int[] a) {
+        Map<Integer, Integer> uniqueNumber = new HashMap<>();
+		for (int value : a) {
+			if (uniqueNumber.get(value) == null) {
+				uniqueNumber.put(value, 1);
+			} else {
+				uniqueNumber.remove(value);
+			}
+		}
         return (int) uniqueNumber.keySet().toArray()[0];
     }
-    
-	static int lonelyinteger2(int[] a) {
-		int rs = 0;
-        for(int i=0;i<a.length;i++){
-        		rs = rs ^ a[i];
-        }
+
+    static int lonelyInteger2(int[] a) {
+        int rs = 0;
+		for (int value : a) {
+			rs = rs ^ value;
+		}
         return rs;
     }
-	public static void main(String[] args) {
-		int[] a = {0,0,1,2,1};
-		System.out.println(lonelyinteger2(a));
-	}
+
+    public static void main(String[] args) {
+        int[] a = {0, 0, 1, 2, 1};
+        System.out.println(lonelyInteger2(a));
+        System.out.println(lonelyInteger(a));
+    }
 }

@@ -9,50 +9,50 @@ import java.util.Map;
 
 public class FullCountingSort {
 
-//    public static void main(String[] args) throws Exception {
-//        ClassLoader classLoader = FullCountingSort.class.getClassLoader();
-//        String filename = java.net.URLDecoder.decode(classLoader.getResource("full_counting_sort_input.txt").getPath(), "UTF-8");
-//        BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
-//        int size = Integer.parseInt(bufferedReader.readLine());
-//        StringBuffer[] st = new StringBuffer[100];
-//
-//        for (int i = 0; i < 100; i++) {
-//            st[i] = new StringBuffer();
-//        }
-//
-//        for (int i = 0; i < size; i++) {
-//            String[] str = bufferedReader.readLine().split(" ");
-//            int k = Integer.parseInt(str[0]);
-//            String s;
-//            if (i < size / 2)
-//                s = "- ";
-//            else
-//                s = str[1] + " ";
-//            st[k] = st[k].append(s);
-//        }
-//
-//        for (int i = 0; i < 100; i++) {
-//            System.out.print(st[i]);
-//        }
-//    }
-
     public static void main(String[] args) throws Exception {
-        System.out.println("FullCountingSort");
         ClassLoader classLoader = FullCountingSort.class.getClassLoader();
         String filename = java.net.URLDecoder.decode(classLoader.getResource("full_counting_sort_input.txt").getPath(), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
-        int n = Integer.parseInt(bufferedReader.readLine());
-        List<List<String>> arr = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            String[] line = bufferedReader.readLine().split(" ");
-            List<String> new_line = new ArrayList<>();
-            new_line.add(line[0]);
-            new_line.add(line[1]);
-            arr.add(new_line);
+        int size = Integer.parseInt(bufferedReader.readLine());
+        StringBuffer[] st = new StringBuffer[100];
+
+        for (int i = 0; i < 100; i++) {
+            st[i] = new StringBuffer();
         }
-        countSort3(arr);
-        bufferedReader.close();
+
+        for (int i = 0; i < size; i++) {
+            String[] str = bufferedReader.readLine().split(" ");
+            int k = Integer.parseInt(str[0]);
+            String s;
+            if (i < size / 2)
+                s = "- ";
+            else
+                s = str[1] + " ";
+            st[k] = st[k].append(s);
+        }
+
+        for (int i = 0; i < 100; i++) {
+            System.out.print(st[i]);
+        }
     }
+
+//    public static void main(String[] args) throws Exception {
+//        System.out.println("FullCountingSort");
+//        ClassLoader classLoader = FullCountingSort.class.getClassLoader();
+//        String filename = java.net.URLDecoder.decode(classLoader.getResource("full_counting_sort_input.txt").getPath(), "UTF-8");
+//        BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
+//        int n = Integer.parseInt(bufferedReader.readLine());
+//        List<List<String>> arr = new ArrayList<>();
+//        for (int i = 0; i < n; i++) {
+//            String[] line = bufferedReader.readLine().split(" ");
+//            List<String> new_line = new ArrayList<>();
+//            new_line.add(line[0]);
+//            new_line.add(line[1]);
+//            arr.add(new_line);
+//        }
+//        countSort3(arr);
+//        bufferedReader.close();
+//    }
 
     static void countSort3(List<List<String>> arr) {
         int size = arr.size();

@@ -4,12 +4,13 @@ public class MergeSort {
 
     public static void main(String[] args) {
         int[] arr = {2, 1, 3, 1, 2};
-        printArray(arr);
-        mergeSort(arr, 0, arr.length - 1);
-        printArray(arr);
+        MergeSort ms = new MergeSort();
+        ms.printArray(arr);
+        ms.mergeSort(arr, 0, arr.length - 1);
+        ms.printArray(arr);
     }
 
-    static void merge(int[] arr, int l, int m, int r) {
+    void merge(int[] arr, int l, int m, int r) {
         int n1 = m - l + 1;
         int n2 = r - m;
         int[] L = new int[n1];
@@ -34,7 +35,7 @@ public class MergeSort {
         }
     }
 
-    static void mergeSort(int[] arr, int l, int r) {
+    public void mergeSort(int[] arr, int l, int r) {
         if (l < r) {
             int m = (l + r) / 2;
             mergeSort(arr, l, m);
@@ -43,7 +44,7 @@ public class MergeSort {
         }
     }
 
-    static void printArray(int[] arr) {
+    void printArray(int[] arr) {
         for (int value : arr) System.out.print(value + " ");
         System.out.println();
     }

@@ -18,10 +18,6 @@ public class LongestPalindrome {
 
     private boolean palindrome(String str) {
         StringBuilder reverse_str = new StringBuilder(str);
-        if (str.equals(reverse_str.reverse().toString())) {
-            return true;
-        } else {
-            return false;
-        }
+        return str.equals(reverse_str.reverse().toString());
     }
 }
